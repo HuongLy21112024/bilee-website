@@ -1,0 +1,35 @@
+<%- include('layout_header') %>
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">📜 Nhật ký Hệ thống (Logs)</h1>
+                <button class="btn btn-outline-secondary btn-sm">🔄 Làm mới nhật ký</button>
+            </div>
+            <div class="table-responsive bg-white shadow-sm p-3 rounded">
+                <table class="table table-sm table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Hành động</th>
+                            <th>IP Người dùng</th>
+                            <th>Máy chủ xử lý</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (activities && activities.length > 0) { %>
+                            <% activities.forEach(log => { %>
+                            <tr>
+                                <td class="text-muted"><%= new Date(log.timestamp).toLocaleString() %></td>
+                                <td><span class="text-primary fw-bold"><%= log.action %></span></td>
+                                <td><code><%= log.userIp %></code></td>
+                                <td><span class="badge bg-dark"><%= log.node %></span></td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="4" class="text-center">Chưa có hoạt động nào được ghi nhận</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

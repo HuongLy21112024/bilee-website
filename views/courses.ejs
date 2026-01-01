@@ -1,0 +1,42 @@
+<%- include('layout_header') %>
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">📚 Quản lý Khóa học</h1>
+                <button class="btn btn-primary">➕ Tạo khóa học mới</button>
+            </div>
+            <div class="table-responsive bg-white shadow-sm p-3 rounded">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Mã KH</th>
+                            <th>Tên khóa học</th>
+                            <th>Giảng viên</th>
+                            <th>Học phí</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (courses && courses.length > 0) { %>
+                            <% courses.forEach(course => { %>
+                            <tr>
+                                <td><strong><%= course.CourseID %></strong></td>
+                                <td><%= course.CourseName %></td>
+                                <td><%= course.Instructor %></td>
+                                <td><%= course.Fee %> VNĐ</td>
+                                <td><span class="badge bg-success">Đang mở</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning">Sửa</button>
+                                    <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="6" class="text-center">Chưa có dữ liệu khóa học</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
