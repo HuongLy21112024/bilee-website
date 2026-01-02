@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs'); và const jwt = require('jsonwebtoken');
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -24,6 +25,7 @@ const activitySchema = new mongoose.Schema({
     campus_code: String,
     timestamp: { type: Date, default: Date.now }
 });
+
 activitySchema.index({ user_id: 1 }); // Tạo chỉ mục cho user_id để tìm kiếm nhanh hơn
 activitySchema.index({ campus_code: 1 }); // Tạo chỉ mục cho campus_code để thống kê nhanh hơn
 const Activity = mongoose.model('Activity', activitySchema, 'activities');
@@ -38,6 +40,10 @@ app.get('/', (req, res) => {
 // B. CREATE: Thêm mới
 app.post('/add-activity', async (req, res) => {
     try {
+        // THÊM DÒNG NÀY ĐỂ BẢO MẬT:
+        if (!req.body.user_id || !req.body.activity_id) {
+            return res.status(400).send("Dữ liệu không hợp lệ - Thiếu thông tin bắt buộc!");
+        }
         const newAct = new Activity(req.body);
         await newAct.save();
         res.redirect('/'); // Lưu xong tải lại trang
@@ -66,5 +72,6 @@ app.get('/delete/:id', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
 
 
