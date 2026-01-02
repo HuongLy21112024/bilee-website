@@ -4,7 +4,8 @@ const app = express();
 
 // 🟢 SỬA TẠI ĐÂY: Sử dụng biến môi trường để Render đọc được link Atlas
 // Nếu chạy ở máy local mà không có biến môi trường, nó sẽ dùng link mặc định phía sau
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/smartlearn';
+// Đoạn code kết nối sau khi đã thay password
+const mongoURI = "mongodb+srv://huongvip2442_db_user:PnU8gu5tUgUC0zZg@cluster0.cpdx366.mongodb.net/smartlearn?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoURI)
     .then(() => console.log("✅ Kết nối MongoDB thành công!"))
@@ -39,4 +40,5 @@ app.get('/', async (req, res) => {
 
 // 🟢 SỬA TẠI ĐÂY: Render yêu cầu server chạy trên cổng được cấp phát (process.env.PORT)
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => console.log(`🚀 Web đang chạy tại cổng: ${PORT}`));
