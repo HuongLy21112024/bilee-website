@@ -144,6 +144,49 @@
         <button type="submit">Xác Nhận Lưu Dữ Liệu</button>
     </form>
 </div>
+<div class="card" style="max-width: 800px; margin-top: 20px;">
+    <h3>Danh sách hoạt động vừa thêm</h3>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+        <thead>
+            <tr style="background: #eee;">
+                <th>User ID</th>
+                <th>Action</th>
+                <th>Campus</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+            </tbody>
+    </table>
 
+    <h3 style="margin-top: 30px;">Thống kê Campus (Aggregation)</h3>
+    <div id="stats-area" style="font-weight: bold; color: #001e2b;"></div>
+</div>
+
+<script>
+    // Hàm lấy dữ liệu từ API và hiển thị
+    async function loadData() {
+        // 1. Load danh sách CRUD (Read)
+        const res = await fetch('/api/activities');
+        const data = await res.json();
+        const table = document.getElementById('data-table');
+        table.innerHTML = data.map(item => `
+            <tr>
+                <td>${item.user_id}</td>
+                <td>${item.action}</td>
+                <td>${item.campus_code}</td>
+                <td><a href="/delete/${item._id}" style="color:red;">Xóa</a></td>
+            </tr>
+        `).join('');
+
+        // 2. Load thống kê (Aggregation)
+        const resStats = await fetch('/api/stats');
+        const stats = await resStats.json();
+        document.getElementById('stats-area').innerHTML = stats.map(s => 
+            `📍 ${s._id}: ${s.count} hoạt động`
+        ).join(' | ');
+    }
+    loadData(); // Chạy hàm khi mở trang
+</script>
 </body>
 </html>
