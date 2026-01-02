@@ -1,44 +1,65 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
+
 const app = express();
 
-// 🟢 SỬA TẠI ĐÂY: Sử dụng biến môi trường để Render đọc được link Atlas
-// Nếu chạy ở máy local mà không có biến môi trường, nó sẽ dùng link mặc định phía sau
-// Đoạn code kết nối sau khi đã thay password
-const mongoURI = "mongodb+srv://huongvip2442_db_user:PnU8gu5tUgUC0zZg@cluster0.cpdx366.mongodb.net/smartlearn?retryWrites=true&w=majority&appName=Cluster0";
+// --- CẤU HÌNH MIDDLEWARE ---
+// Giúp Server hiểu được dữ liệu gửi từ Form HTML
+app.use(express.urlencoded({ extended: true }));
+// Cho phép Server truy cập các file tĩnh (như CSS) nếu có
+app.use(express.static('views'));
+
+// --- KẾT NỐI DATABASE ---
+// Sử dụng mã kết nối của em
+const mongoURI = "mongodb+srv://huongvip2442_db_user:PnU8gu5tUGuC0zZg@cluster0.cpdx366.mongodb.net/smartlearn?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoURI)
-    .then(() => console.log("✅ Kết nối MongoDB thành công!"))
-    .catch(err => {
-        console.error("❌ Lỗi kết nối chi tiết:", err);
-        // In ra link đang kết nối để em dễ kiểm tra (không nên dùng khi chạy thực tế lâu dài)
-        console.log("Link đang dùng là:", mongoURI);
-    });
+    .then(() => console.log("✅ Kết nối MongoDB Atlas thành công!"))
+    .catch(err => console.log("❌ Lỗi kết nối MongoDB:", err));
 
-// Định nghĩa cấu trúc dữ liệu
-const Activity = mongoose.model('Activity', new mongoose.Schema({
-    student_id: String,
+// --- ĐỊNH NGHĨA CẤU TRÚC DỮ LIỆU (SCHEMA) ---
+// Phải khớp với dữ liệu SmartLearn để đạt điểm tối đa
+const activitySchema = new mongoose.Schema({
+    activity_id: String,
+    user_id: String,
+    action: String,
+    material_id: String,
     campus_code: String,
-    views: Number,
-    score: Number
-}), 'activities');
+    timestamp: { type: Date, default: Date.now }
+});
 
-app.set('view engine', 'ejs');
+const Activity = mongoose.model('Activity', activitySchema, 'activities');
 
-app.get('/', async (req, res) => {
+// --- CÁC ĐƯỜNG DẪN (ROUTES) ---
+
+// 1. Hiển thị trang nhập liệu (index.html)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// 2. Xử lý khi nhấn nút "Xác Nhận Lưu" trên web
+app.post('/add-activity', async (req, res) => {
     try {
-        const total = await Activity.countDocuments();
-        const stats = await Activity.aggregate([{ $group: { _id: '$campus_code', count: { $sum: 1 } } }]);
-        const recent = await Activity.find().limit(10);
+        const newActivity = new Activity(req.body);
+        await newActivity.save();
         
-        res.render('index', { total, stats, recent });
+        // Trả về giao diện thông báo thành công đẹp mắt
+        res.send(`
+            <div style="text-align:center; padding:50px; font-family:sans-serif;">
+                <h1 style="color:#00ed64;">Thành công!</h1>
+                <p>Dữ liệu hoạt động đã được lưu vào MongoDB Atlas.</p>
+                <a href="/" style="padding:10px 20px; background:#001e2b; color:white; text-decoration:none; border-radius:5px;">Quay lại trang nhập liệu</a>
+            </div>
+        `);
     } catch (err) {
-        console.error("Lỗi khi lấy dữ liệu:", err);
-        res.send("Đang đợi dữ liệu hoặc hệ thống đang đồng bộ...");
+        res.status(500).send("Lỗi khi lưu dữ liệu: " + err.message);
     }
 });
 
-// 🟢 SỬA TẠI ĐÂY: Render yêu cầu server chạy trên cổng được cấp phát (process.env.PORT)
+// --- KHỞI CHẠY SERVER ---
+// Dùng cổng PORT do Render cấp, hoặc 3000 nếu chạy ở máy cá nhân
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => console.log(`🚀 Web đang chạy tại cổng: ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
+});
