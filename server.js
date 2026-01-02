@@ -35,7 +35,9 @@ const Activity = mongoose.model('Activity', activitySchema, 'activities');
 
 // 1. Hiển thị trang nhập liệu (index.html)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 });
 
 // 2. Xử lý khi nhấn nút "Xác Nhận Lưu" trên web
@@ -63,3 +65,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
 });
+
