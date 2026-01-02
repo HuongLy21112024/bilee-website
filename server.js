@@ -4,18 +4,18 @@ const path = require('path');
 
 const app = express();
 
-// --- CẤU HÌNH MIDDLEWARE ---
+// --- MIDDLEWARE ---
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('views'));
+app.use(express.json()); // Cần thiết để xử lý API JSON
 
 // --- KẾT NỐI DATABASE ---
 const mongoURI = "mongodb+srv://huongvip2442_db_user:PnU8gu5tUGuC0zZg@cluster0.cpdx366.mongodb.net/smartlearn?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoURI)
-    .then(() => console.log("✅ Kết nối MongoDB Atlas thành công!"))
-    .catch(err => console.log("❌ Lỗi kết nối MongoDB:", err));
+    .then(() => console.log("✅ Kết nối MongoDB thành công!"))
+    .catch(err => console.error("❌ Lỗi kết nối:", err));
 
-// --- ĐỊNH NGHĨA CẤU TRÚC DỮ LIỆU (SCHEMA) ---
+// --- SCHEMA & MODEL ---
 const activitySchema = new mongoose.Schema({
     activity_id: String,
     user_id: String,
@@ -24,36 +24,43 @@ const activitySchema = new mongoose.Schema({
     campus_code: String,
     timestamp: { type: Date, default: Date.now }
 });
-
 const Activity = mongoose.model('Activity', activitySchema, 'activities');
 
-// --- CÁC ĐƯỜNG DẪN (ROUTES) ---
+// --- ROUTES ---
 
-// 1. Hiển thị trang nhập liệu (Trỏ thẳng vào thư mục gốc)
+// A. Giao diện chính
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 2. Xử lý khi nhấn nút "Xác Nhận Lưu"
+// B. CREATE: Thêm mới
 app.post('/add-activity', async (req, res) => {
     try {
-        const newActivity = new Activity(req.body);
-        await newActivity.save();
-        
-        res.send(`
-            <div style="text-align:center; padding:50px; font-family:sans-serif;">
-                <h1 style="color:#00ed64;">Thành công!</h1>
-                <p>Dữ liệu hoạt động đã được lưu vào MongoDB Atlas.</p>
-                <a href="/" style="padding:10px 20px; background:#001e2b; color:white; text-decoration:none; border-radius:5px;">Quay lại trang nhập liệu</a>
-            </div>
-        `);
-    } catch (err) {
-        res.status(500).send("Lỗi khi lưu dữ liệu: " + err.message);
-    }
+        const newAct = new Activity(req.body);
+        await newAct.save();
+        res.redirect('/'); // Lưu xong tải lại trang
+    } catch (err) { res.status(500).send(err.message); }
 });
 
-// --- KHỞI CHẠY SERVER ---
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy tại cổng: ${PORT}`);
+// C. READ: API lấy danh sách hoạt động (Để hiển thị lên bảng)
+app.get('/api/activities', async (req, res) => {
+    const data = await Activity.find().sort({ timestamp: -1 });
+    res.json(data);
 });
+
+// D. AGGREGATION: API Thống kê theo Campus
+app.get('/api/stats', async (req, res) => {
+    const stats = await Activity.aggregate([
+        { $group: { _id: "$campus_code", count: { $sum: 1 } } }
+    ]);
+    res.json(stats);
+});
+
+// E. DELETE: Xóa hoạt động
+app.get('/delete/:id', async (req, res) => {
+    await Activity.findByIdAndDelete(req.params.id);
+    res.redirect('/');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
