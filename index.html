@@ -1,47 +1,148 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartLearn - Thêm Hoạt Động</title>
+    <title>SmartLearn | Quản Lý Hoạt Động</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 400px; }
-        h2 { text-align: center; color: #00684a; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #00ed64; border: none; border-radius: 6px; color: #001e2b; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:hover { background-color: #00c853; }
-        .footer { text-align: center; margin-top: 15px; font-size: 12px; color: #888; }
+        :root {
+            --primary-color: #00ed64; /* Màu xanh MongoDB */
+            --bg-color: #001e2b;      /* Màu tối chuyên nghiệp */
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            color: var(--bg-color);
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--bg-color);
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #00d65a;
+            transform: translateY(-1px);
+        }
+
+        .status-bar {
+            height: 4px;
+            width: 60px;
+            background: var(--primary-color);
+            margin: 10px auto 20px;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Thêm Hoạt Động Mới</h2>
+<div class="card">
+    <div class="header">
+        <h2>SmartLearn Dashboard</h2>
+        <div class="status-bar"></div>
+        <p>Thêm dữ liệu hoạt động thủ công vào MongoDB</p>
+    </div>
+
     <form action="/add-activity" method="POST">
-        <label>Mã hoạt động (Activity ID)</label>
-        <input type="text" name="activity_id" placeholder="VD: ACT1001" required>
+        <div class="form-group">
+            <label>Mã Hoạt Động (Activity ID)</label>
+            <input type="text" name="activity_id" placeholder="VD: ACT1001" required>
+        </div>
 
-        <label>Mã người dùng (User ID)</label>
-        <input type="text" name="user_id" placeholder="VD: USER200" required>
+        <div class="form-group">
+            <label>Mã Người Dùng (User ID)</label>
+            <input type="text" name="user_id" placeholder="VD: USER2026" required>
+        </div>
 
-        <label>Hành động</label>
-        <select name="action">
-            <option value="Xem">Xem nội dung</option>
-            <option value="Tải">Tải tài liệu</option>
-        </select>
+        <div class="form-group">
+            <label>Hành Động</label>
+            <select name="action">
+                <option value="Xem">Xem (View)</option>
+                <option value="Tải">Tải (Download)</option>
+            </select>
+        </div>
 
-        <label>Mã tài liệu (Material ID)</label>
-        <input type="text" name="material_id" placeholder="VD: MAT88" required>
+        <div class="form-group">
+            <label>Mã Tài Liệu (Material ID)</label>
+            <input type="text" name="material_id" placeholder="VD: MAT_CSDL_01" required>
+        </div>
 
-        <label>Cơ sở (Campus Code)</label>
-        <input type="text" name="campus_code" placeholder="VD: CSHN" required>
+        <div class="form-group">
+            <label>Cơ Sở (Campus Code)</label>
+            <input type="text" name="campus_code" placeholder="VD: CSHN" required>
+        </div>
 
-        <button type="submit">Lưu vào MongoDB Atlas</button>
+        <button type="submit">Xác Nhận Lưu Dữ Liệu</button>
     </form>
-    <div class="footer">Dự án thực hành CSDL - SmartLearn</div>
 </div>
 
 </body>
