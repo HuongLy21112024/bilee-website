@@ -24,6 +24,8 @@ const activitySchema = new mongoose.Schema({
     campus_code: String,
     timestamp: { type: Date, default: Date.now }
 });
+activitySchema.index({ user_id: 1 }); // Tạo chỉ mục cho user_id để tìm kiếm nhanh hơn
+activitySchema.index({ campus_code: 1 }); // Tạo chỉ mục cho campus_code để thống kê nhanh hơn
 const Activity = mongoose.model('Activity', activitySchema, 'activities');
 
 // --- ROUTES ---
@@ -64,3 +66,4 @@ app.get('/delete/:id', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
